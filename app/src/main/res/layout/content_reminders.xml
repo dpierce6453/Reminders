@@ -13,8 +13,11 @@
     tools:context="com.apress.gerber.reminders.RemindersActivity"
     tools:showIn="@layout/activity_reminders">
 
-    <TextView
-        android:layout_width="wrap_content"
+    <ListView
+        android:layout_width="match_parent"
+        android:background="@color/dark_grey"
         android:layout_height="wrap_content"
-        android:text="Hello World!"/>
+        android:id="@+id/reminders_list_view"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"/>
 </RelativeLayout>
