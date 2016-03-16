@@ -19,5 +19,8 @@
         android:layout_height="wrap_content"
         android:id="@+id/reminders_list_view"
         android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"/>
+        android:layout_centerHorizontal="true"
+        tools:listitem="@layout/reminders_row"
+        />
+
 </RelativeLayout>
