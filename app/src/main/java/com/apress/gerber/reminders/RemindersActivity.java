@@ -1,5 +1,6 @@
 package com.apress.gerber.reminders;
 
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -12,9 +13,13 @@ import android.view.MenuItem;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import java.sql.SQLException;
+
 public class RemindersActivity extends AppCompatActivity
 {
     private ListView mListView;
+    private RemindersDbAdapter mDbAdapter;
+    private RemindersSimpleCursorAdapter mCursorAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -22,19 +27,42 @@ public class RemindersActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_reminders);
         mListView = (ListView) findViewById(R.id.reminders_list_view);
-        // The arrayAdapter is the controller in our model view controller relationship
-        // It binds the elements of an array to a particular view
-        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(
-                //context
-                this,
-                //layout (view). Which layout to use.
+        if (mListView != null)
+        {
+            mListView.setDivider(null);
+        }
+        mDbAdapter = new RemindersDbAdapter(this);
+        try
+        {
+            mDbAdapter.open();
+        } catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+        Cursor cursor = mDbAdapter.fetchAllReminders();
+        //from columns defined in the db
+        String[] from = new String[]{RemindersDbAdapter.COL_CONTENT};
+        //to the ids of views in the layout.
+        int[] to = new int[]{R.id.row_text};
+        mCursorAdapter = new RemindersSimpleCursorAdapter(
+                //Context
+                RemindersActivity.this,
+                //the layout of the row
                 R.layout.reminders_row,
-                //row - which fields in the layout to use
-                R.id.row_text,
-                //data (model) with bogus data to test our listview
-                new String[]{"first record", "second record", "third record"}
-        );
-        mListView.setAdapter(arrayAdapter);
+                //cursor
+                cursor,
+                //from columns defined in the db
+                from,
+                //to the ids of the views in the layout
+                to,
+                //flag - not used
+                0 );
+
+        // the cursorAdapter (controller) is now updating the ListView (view)
+        // with data from the db (model)
+        mListView.setAdapter(mCursorAdapter);
+
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
